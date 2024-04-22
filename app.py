@@ -42,6 +42,12 @@ def machines_html():
 @app.route('/signup', methods=['POST'])
 def signup():
     data = request.json
+
+    # check if user already exists
+    existing_user = users.find_one({'email': data['email']})
+    if existing_user:
+        return jsonify({'message': 'User already exists'}), 409
+
     hashed_password = bcrypt.hashpw(data['password'], bcrypt.gensalt())
     user_id = users.insert_one({
         'name': data['name'],
