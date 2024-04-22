@@ -56,14 +56,20 @@ def login_html():
 @app.route('/signup', methods=['POST'])
 def signup():
     data = request.json
+    
+    # Check if the email is already in use
+    existing_user = users.find_one({'email': data['email']})
+    if existing_user:
+        return jsonify({'message': 'Email already in use'}), 409
+    
     hashed_password = bcrypt.hashpw(
-        data['password'].encode(), bcrypt.gensalt())
+        data['password'], bcrypt.gensalt())
     user_id = users.insert_one({
         'name': data['name'],
         'email': data['email'],
         'password': hashed_password
     }).inserted_id
-    return jsonify({'user_id': str(user_id)}), 201
+    return jsonify({'user_id': str(user_id)}), 200
 
 
 @app.route('/login', methods=['POST'])
@@ -72,7 +78,7 @@ def login():
     print(data)
     try:
         user = users.find_one({'email': data['email']})
-        if user and bcrypt.hashpw(data['password'].encode(), user['password']):
+        if user and bcrypt.hashpw(data['password'], user['password']):
             session['user_id'] = str(user['_id'])
             return jsonify({'message': 'Login successful'}), 200
     except Exception as e:

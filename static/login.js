@@ -44,11 +44,11 @@ const handleSignup = async () => {
     },
     body: JSON.stringify({ email, password, name }),
   })
-  print(response.status)
   if (response.status === 200) {
     window.location.href = '/'
   } else {
-    alert('Email already exists')
+    const data = await response.json()
+    alert(data.message)
   }
 }
 loginbtn.addEventListener('click', (event) => {
