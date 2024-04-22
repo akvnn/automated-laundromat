@@ -78,6 +78,13 @@ book_machine_response = requests.post(f"{base_url}/bookMachine", json={
 }, cookies=login_response.cookies)  # Use cookies for session management
 print("Book Machine Response:", book_machine_response.json())
 
+# get machine bookings
+machine_id = machines.find_one({'type': 'washer'})['_id']
+machine_bookings_response = requests.post(f"{base_url}/machineBookings", json={
+    "machineId": str(machine_id)
+})
+print("Machine Bookings:", machine_bookings_response.json())
+
 # Logout
 logout_response = requests.get(f"{base_url}/logout", cookies=login_response.cookies)
 print("Logout Response:", logout_response.json())

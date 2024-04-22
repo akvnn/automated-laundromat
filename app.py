@@ -72,9 +72,26 @@ def logout():
     session.pop('user_id', None)
     return jsonify({'message': 'Logged out'}), 200
 
+@app.route('/machineBookings', methods=['POST'])
+def machine_bookings():
+    data = request.json
+    machine_id = data['machineId']
+    bookings_this_week = bookings.find({
+        'machineId': ObjectId(machine_id),
+        'start': {'$gte': datetime.now() - timedelta(days=datetime.now().weekday() + 1),
+                  '$lt': datetime.now() + timedelta(days=7 - datetime.now().weekday())}
+    })
+    result = []
+    for booking in bookings_this_week:
+        booking_data = {
+            'booking_id': str(booking['_id']),
+            'userId': str(booking['userId']),
+            'start': booking['start'].strftime('%Y-%m-%d %H:%M'),
+            'end': booking['end'].strftime('%Y-%m-%d %H:%M')
+        }
+        result.append(booking_data)
+    return jsonify(result)
 
-@app.route('/availableMachines', methods=['GET'])
-def available_machines():
     all_machines = machines.find({})
     result = {'washers': [], 'dryers': []}
     for machine in all_machines:
