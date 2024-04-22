@@ -92,13 +92,15 @@ def machine_bookings():
         result.append(booking_data)
     return jsonify(result)
 
+@app.route('/getMachines', methods=['GET'])
+def get_machines():
     all_machines = machines.find({})
     result = {'washers': [], 'dryers': []}
     for machine in all_machines:
         machine_data = {
             'id': str(machine['_id']),
             'status': machine['status'],
-            'bookedSlots': [[slot['start'].strftime('%Y-%m-%d %H:%M'), slot['end'].strftime('%Y-%m-%d %H:%M')] for slot in machine['bookedSlots']]
+            'type': machine['type']
         }
         if machine['type'] == 'washer':
             result['washers'].append(machine_data)

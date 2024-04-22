@@ -39,7 +39,7 @@ bookings.insert_one({
 
 import requests
 
-base_url = "http://127.0.0.1:5000"  # Adjust if your Flask app is hosted elsewhere
+base_url = "http://127.0.0.1:8080"  # Adjust if your Flask app is hosted elsewhere
 
 # Sign up a new user
 signup_response = requests.post(f"{base_url}/signup", json={
@@ -57,7 +57,7 @@ login_response = requests.post(f"{base_url}/login", json={
 print("Login Response:", login_response.json())
 
 # Get available machines
-machines_response = requests.get(f"{base_url}/availableMachines")
+machines_response = requests.get(f"{base_url}/getMachines")
 print("Available Machines:", machines_response.json())
 
 # Book a machine
