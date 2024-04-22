@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Automated Laundromat | Login</title>
+    <link rel="icon" href="../static/images/logo.png" type="image/x-icon" />
+
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../static/style.css" />
+  </head>
+  <body>
+    <nav class="navbar">
+      <img src="../static/images/logo.png" alt="logo" class="logo-img" />
+      <ul class="links">
+        <li class="link"><a href="/">Home</a></li>
+        <li class="link"><a href="/machines">Book Machine</a></li>
+        <li class="link"><a>Notifications</a></li>
+        <li class="link"><a>Bookings</a></li>
+        <li class="link"><a>Account</a></li>
+      </ul>
+    </nav>
+    <section class="login">
+      <div class="wrapper">
+        <div class="card-switch">
+          <label class="switch">
+            <input type="checkbox" class="toggle" />
+            <span class="slider"></span>
+            <span class="card-side"></span>
+            <div class="flip-card__inner">
+              <div class="flip-card__front">
+                <div class="title">Log in</div>
+                <form class="flip-card__form" onsubmit="return">
+                  <input
+                    class="flip-card__input"
+                    name="email"
+                    placeholder="Email"
+                    type="email"
+                    id="email_login"
+                  />
+                  <input
+                    class="flip-card__input"
+                    name="password"
+                    placeholder="Password"
+                    type="password"
+                    id="password_login"
+                  />
+                  <button class="flip-card__btn" id="loginbtn">
+                    Let`s go!
+                  </button>
+                </form>
+              </div>
+              <div class="flip-card__back">
+                <div class="title">Sign up</div>
+                <form class="flip-card__form" onsubmit="return">
+                  <input
+                    class="flip-card__input"
+                    placeholder="Name"
+                    type="name"
+                    id="name_signup"
+                  />
+                  <input
+                    class="flip-card__input"
+                    name="email"
+                    placeholder="Email"
+                    type="email"
+                    id="email_signup"
+                  />
+                  <input
+                    class="flip-card__input"
+                    name="password"
+                    placeholder="Password"
+                    type="password"
+                    id="password_signup"
+                  />
+                  <button class="flip-card__btn" id="signupbtn">
+                    Confirm!
+                  </button>
+                </form>
+              </div>
+            </div>
+          </label>
+        </div>
+      </div>
+    </section>
+    <footer class="footer">
+      <p class="footer-p">Made with <i class="fas fa-heart"></i> by Group 3</p>
+    </footer>
+    <script src="../static/login.js"></script>
+  </body>
+</html>

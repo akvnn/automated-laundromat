@@ -1,18 +1,27 @@
 from flask import Flask, request, jsonify, session, render_template
-from pymongo import MongoClient
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
 from bson.objectid import ObjectId
 from datetime import datetime, timedelta
 import bcrypt
-
+import os
 app = Flask(__name__)
-app.secret_key = "your_secret_key"  # Use a proper secret key in production
-
+app.secret_key = 'some_secret_key'
 # MongoDB setup
-client = MongoClient('mongodb://localhost:27017/')
+uri = os.environ.get('MONGODB_URI')
+# Create a new client and connect to the server
+client = MongoClient(uri, server_api=ServerApi('1'))
+# Send a ping to confirm a successful connection
+try:
+    client.admin.command('ping')
+    print("Successfully connected to MongoDB!")
+except Exception as e:
+    print(e)
 db = client['laundromat']
 users = db['users']
 machines = db['machines']
 bookings = db['bookings']
+# End of MongoDB setup
 
 # Helper Functions
 
@@ -39,16 +48,16 @@ def machines_html():
     return render_template('machines.html')
 
 
+@app.route('/login', methods=['GET'])
+def login_html():
+    return render_template('login.html')
+
+
 @app.route('/signup', methods=['POST'])
 def signup():
     data = request.json
-
-    # check if user already exists
-    existing_user = users.find_one({'email': data['email']})
-    if existing_user:
-        return jsonify({'message': 'User already exists'}), 409
-
-    hashed_password = bcrypt.hashpw(data['password'], bcrypt.gensalt())
+    hashed_password = bcrypt.hashpw(
+        data['password'].encode(), bcrypt.gensalt())
     user_id = users.insert_one({
         'name': data['name'],
         'email': data['email'],
@@ -60,10 +69,14 @@ def signup():
 @app.route('/login', methods=['POST'])
 def login():
     data = request.json
-    user = users.find_one({'email': data['email']})
-    if user and bcrypt.hashpw(data['password'], user['password']):
-        session['user_id'] = str(user['_id'])
-        return jsonify({'message': 'Login successful'}), 200
+    print(data)
+    try:
+        user = users.find_one({'email': data['email']})
+        if user and bcrypt.hashpw(data['password'].encode(), user['password']):
+            session['user_id'] = str(user['_id'])
+            return jsonify({'message': 'Login successful'}), 200
+    except Exception as e:
+        print(e)
     return jsonify({'message': 'Unauthorized'}), 401
 
 
@@ -71,6 +84,7 @@ def login():
 def logout():
     session.pop('user_id', None)
     return jsonify({'message': 'Logged out'}), 200
+
 
 @app.route('/machineBookings', methods=['POST'])
 def machine_bookings():
@@ -91,6 +105,7 @@ def machine_bookings():
         }
         result.append(booking_data)
     return jsonify(result)
+
 
 @app.route('/getMachines', methods=['GET'])
 def get_machines():
