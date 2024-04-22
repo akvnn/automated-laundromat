@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" href="../static/images/logo.png" type="image/x-icon" />
+    <link rel="icon" href="../../static/images/logo.png" type="image/x-icon" />
     <title>Automated Laundromat | Booking</title>
     <link
       rel="stylesheet"
@@ -13,67 +13,13 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
     />
-    <link rel="stylesheet" href="../static/style.css" />
+    <link rel="stylesheet" href="../../static/style.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
-    <script>
-      document.addEventListener('DOMContentLoaded', function () {
-        let calendarEl = document.getElementById('calendar')
-        let draggableEl = document.getElementById('external-events')
-        let calendar = new FullCalendar.Calendar(calendarEl, {
-          initialView: 'timeGridWeek',
-          droppable: true,
-          editable: true,
-          selectable: true,
-          allDaySlot: false,
-          slotDuration: '00:30:00', // 1 slot = 1 cycle
-          headerToolbar: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'timeGridWeek,timeGridDay',
-          },
-          events: [
-            // {
-            // title: 'All Day Event',
-            //start: '2024-04-21',
-            //},
-          ],
-          eventOverlap: false,
-          select: function (info) {
-            // is called when a user selects a time slot
-            let duration = moment.duration(
-              moment(info.endStr).diff(moment(info.startStr))
-            )
-            if (duration.asHours() > 1) {
-              console.log(duration.asHours())
-              alert('Events cannot be longer than 1 hour')
-              calendar.unselect()
-              return
-            }
-            let title = prompt('Please enter a title for your event')
-            if (title) {
-              calendar.addEvent({
-                title: title,
-                start: info.startStr,
-                end: info.endStr,
-                createdByUser: true,
-              })
-              // make api call to save event
-            }
-            calendar.unselect()
-          },
-          eventAllow: function (dropInfo, draggedEvent) {
-            // only allow dragging and resizing if the event was created by the user
-            return draggedEvent.extendedProps.createdByUser
-          },
-        })
-        calendar.render()
-      })
-    </script>
   </head>
   <body>
     <nav class="navbar">
-      <img src="../static/images/logo.png" alt="logo" class="logo-img" />
+      <img src="../../static/images/logo.png" alt="logo" class="logo-img" />
       <ul class="links">
         <li class="link"><a href="index.html">Home</a></li>
         <li class="link"><a>Book Machine</a></li>
@@ -85,5 +31,6 @@
     <section class="booking">
       <div id="calendar" class="calendar"></div>
     </section>
+    <script src="../../static/bookings.js"></script>
   </body>
 </html>

@@ -49,19 +49,25 @@ def machines_html():
 
 
 @app.route('/login', methods=['GET'])
+@app.route('/signup', methods=['GET'])
 def login_html():
     return render_template('login.html')
+
+
+@app.route('/bookings/<machine_type>/<machine_id>', methods=['GET'])
+def bookings_html(machine_type, machine_id):
+    return render_template('bookings.html')
 
 
 @app.route('/signup', methods=['POST'])
 def signup():
     data = request.json
-    
+
     # Check if the email is already in use
     existing_user = users.find_one({'email': data['email']})
     if existing_user:
         return jsonify({'message': 'Email already in use'}), 409
-    
+
     hashed_password = bcrypt.hashpw(
         data['password'], bcrypt.gensalt())
     user_id = users.insert_one({
@@ -107,7 +113,8 @@ def machine_bookings():
             'booking_id': str(booking['_id']),
             'userId': str(booking['userId']),
             'start': booking['start'].strftime('%Y-%m-%d %H:%M'),
-            'end': booking['end'].strftime('%Y-%m-%d %H:%M')
+            'end': booking['end'].strftime('%Y-%m-%d %H:%M'),
+            'title': booking['title']
         }
         result.append(booking_data)
     return jsonify(result)
@@ -121,7 +128,8 @@ def get_machines():
         machine_data = {
             'id': str(machine['_id']),
             'status': machine['status'],
-            'type': machine['type']
+            'type': machine['type'],
+            'name': machine['name']  # added
         }
         if machine['type'] == 'washer':
             result['washers'].append(machine_data)
@@ -133,22 +141,24 @@ def get_machines():
 @app.route('/bookMachine', methods=['POST'])
 def book_machine():
     data = request.json
-    user_id = session.get('user_id')
+    user_id = data['userId']  # later change to use jwt
     if not user_id:
         return jsonify({'message': 'Unauthorized'}), 401
 
-    start_time = datetime.strptime(data['dateTime'], '%Y-%m-%d %H:%M')
-    end_time = start_time + timedelta(minutes=30 * data['cycles'])
+    start_time = datetime.strptime(data['start'][:19], '%Y-%m-%dT%H:%M:%S')
+    end_time = datetime.strptime(data['end'][:19], '%Y-%m-%dT%H:%M:%S')
+    # end_time = start_time + timedelta(minutes=30 * data['cycles']) # not needed
 
-    if data['cycles'] > 2:
-        return jsonify({'message': 'Cannot book more than 2 cycles'}), 400
+   # if data['cycles'] > 2: # handled in frontend, can keep by calcuating the cycles from the time
+   #     return jsonify({'message': 'Cannot book more than 2 cycles'}), 400
 
     if check_availability(data['machineId'], start_time, end_time):
         booking_id = bookings.insert_one({
             'machineId': ObjectId(data['machineId']),
             'userId': ObjectId(user_id),
             'start': start_time,
-            'end': end_time
+            'end': end_time,
+            'title': data['title']
         }).inserted_id
         return jsonify({'booking_id': str(booking_id)}), 200
     return jsonify({'message': 'Machine not available'}), 409

@@ -17,9 +17,10 @@ const loadMachines = async () => {
     item.classList.add('item')
     const desc = document.createElement('p')
     desc.classList.add('item-desc')
-    const len = washer.id.length
-    desc.innerText =
-      'Washer ' + washer.id[len - 1] + washer.id[len - 2] + washer.id[len - 3]
+    // const len = washer.id.length
+    // desc.innerText =
+    //   'Washer ' + washer.id[len - 1] + washer.id[len - 2] + washer.id[len - 3]
+    desc.innerText = `Washer ${washer.name}`
     const status = document.createElement('p')
     status.classList.add('item-status')
     status.innerText = `Current Status: ${washer.status}`
@@ -41,9 +42,10 @@ const loadMachines = async () => {
     item.classList.add('item')
     const desc = document.createElement('p')
     desc.classList.add('item-desc')
-    const len = dryer.id.length
-    desc.innerText =
-      'Dryer ' + dryer.id[len - 1] + dryer.id[len - 2] + dryer.id[len - 3]
+    // const len = dryer.id.length
+    // desc.innerText =
+    // 'Dryer ' + dryer.id[len - 1] + dryer.id[len - 2] + dryer.id[len - 3]
+    desc.innerText = `Dryer ${dryer.name}`
     const status = document.createElement('p')
     status.classList.add('item-status')
     status.innerText = `Current Status: ${dryer.status}`
@@ -51,6 +53,9 @@ const loadMachines = async () => {
     btn.classList.add('btn')
     btn.classList.add('item-btn')
     btn.innerText = 'Book'
+    btn.addEventListener('click', async () => {
+      goToBooking(dryer.id, 'dryer')
+    })
     item.appendChild(desc)
     item.appendChild(status)
     item.appendChild(btn)
