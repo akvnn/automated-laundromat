@@ -300,7 +300,29 @@ body {
   border: none;
 }
 /* end of items */
-
+/* booking */
+.booking {
+  background-color: #000;
+  color: #485975;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.calendar {
+  width: 80%;
+  height: 80vh;
+  margin-top: 3rem;
+}
+:root {
+  --fc-border-color: #485975; /* change color of table border */
+}
+/* .fc-timegrid-axis-cushion {
+  font-weight: 500;
+} */
+.fc-timegrid-slot-label-cushion {
+  font-weight: 500;
+}
+/* end of booking */
 /* footer */
 .footer {
   display: flex;

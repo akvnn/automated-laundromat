@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, session
+from flask import Flask, request, jsonify, session, render_template
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from datetime import datetime, timedelta
@@ -15,6 +15,8 @@ machines = db['machines']
 bookings = db['bookings']
 
 # Helper Functions
+
+
 def check_availability(machine_id, start_time, end_time):
     """ Check if the machine is available between the given times """
     conflicts = bookings.find_one({
@@ -25,6 +27,18 @@ def check_availability(machine_id, start_time, end_time):
     return conflicts is None
 
 # API Endpoints
+
+
+@app.route('/', methods=['GET'])
+def home():
+    return render_template('index.html')
+
+
+@app.route('/machines', methods=['GET'])
+def machines_html():
+    return render_template('machines.html')
+
+
 @app.route('/signup', methods=['POST'])
 def signup():
     data = request.json
@@ -36,6 +50,7 @@ def signup():
     }).inserted_id
     return jsonify({'user_id': str(user_id)}), 201
 
+
 @app.route('/login', methods=['POST'])
 def login():
     data = request.json
@@ -45,10 +60,12 @@ def login():
         return jsonify({'message': 'Login successful'}), 200
     return jsonify({'message': 'Unauthorized'}), 401
 
+
 @app.route('/logout', methods=['GET'])
 def logout():
     session.pop('user_id', None)
     return jsonify({'message': 'Logged out'}), 200
+
 
 @app.route('/availableMachines', methods=['GET'])
 def available_machines():
@@ -65,6 +82,7 @@ def available_machines():
         elif machine['type'] == 'dryer':
             result['dryers'].append(machine_data)
     return jsonify(result)
+
 
 @app.route('/bookMachine', methods=['POST'])
 def book_machine():
@@ -88,3 +106,9 @@ def book_machine():
         }).inserted_id
         return jsonify({'booking_id': str(booking_id)}), 200
     return jsonify({'message': 'Machine not available'}), 409
+
+
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port=8080)
+    # from waitress import serve
+    # serve(app, host="0.0.0.0", port=8080, threads=100)
