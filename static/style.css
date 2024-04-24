@@ -532,6 +532,79 @@ body {
   cursor: pointer;
 }
 /* end of login */
+/* payment */
+.payment {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 3rem;
+  color: #fff;
+}
+.payment_method {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  color: #fff;
+}
+.payment_method_option {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  margin-top: 1rem;
+}
+.payment_method_option input {
+  display: none;
+}
+.payment_method_option label {
+  border: 1px solid #485975;
+  padding: 1rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.payment_method_option input[type='radio'] + label:hover {
+  background-color: #fff;
+  color: #485975;
+}
+.payment_method_option input[type='radio']:checked + label {
+  background-color: #485975;
+  color: #fff;
+}
+.payment_method_btn {
+  margin: 1rem;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  background-color: #485975;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+}
+.payment_method_btn:hover {
+  color: #485975;
+  background-color: #fff;
+}
+.booking_info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  color: #fff;
+  border: 1px solid #485975;
+  border-radius: 10px;
+  padding: 1rem;
+}
+.payment_p {
+  align-items: center;
+  letter-spacing: 1px;
+  margin: 0.25rem 0;
+}
+/* end of payment */
 /* footer */
 .footer {
   display: flex;

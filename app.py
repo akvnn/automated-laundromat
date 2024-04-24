@@ -54,9 +54,14 @@ def login_html():
     return render_template('login.html')
 
 
-@app.route('/bookings/<machine_type>/<machine_id>', methods=['GET'])
-def bookings_html(machine_type, machine_id):
+@app.route('/bookings/<machine_type>/<machine_id>/<machine_name>', methods=['GET'])
+def bookings_html(machine_type, machine_id, machine_name):
     return render_template('bookings.html')
+
+
+@app.route('/payment', methods=['GET'])
+def payment_html():
+    return render_template('payment.html')
 
 
 @app.route('/signup', methods=['POST'])

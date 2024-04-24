@@ -1,5 +1,5 @@
-const goToBooking = (id, type) => {
-  window.location.href = `/bookings/${type}/${id}`
+const goToBooking = (id, type, name) => {
+  window.location.href = `/bookings/${type}/${id}/${name}`
 }
 const loadMachines = async () => {
   const response = await fetch('/getMachines')
@@ -29,7 +29,7 @@ const loadMachines = async () => {
     btn.classList.add('item-btn')
     btn.innerText = 'Book'
     btn.addEventListener('click', async () => {
-      goToBooking(washer.id, 'washer')
+      goToBooking(washer.id, 'washer', washer.name)
     })
     item.appendChild(desc)
     item.appendChild(status)
@@ -54,7 +54,7 @@ const loadMachines = async () => {
     btn.classList.add('item-btn')
     btn.innerText = 'Book'
     btn.addEventListener('click', async () => {
-      goToBooking(dryer.id, 'dryer')
+      goToBooking(dryer.id, 'dryer', dryer.name)
     })
     item.appendChild(desc)
     item.appendChild(status)
