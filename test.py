@@ -23,9 +23,9 @@ bookings = db['bookings']
 # End of MongoDB setup
 
 # Clear existing data
-# users.drop()
-# machines.drop()
-# bookings.drop()
+users.drop()
+machines.drop()
+bookings.drop()
 
 # Insert sample users
 password = bcrypt.hashpw("password123", bcrypt.gensalt())
@@ -77,8 +77,10 @@ print("Available Machines:", machines_response.json())
 machine_id = machines.find_one({'type': 'washer'})['_id']
 book_machine_response = requests.post(f"{base_url}/bookMachine", json={
     "machineId": str(machine_id),
-    "dateTime": (datetime.now() + timedelta(hours=2)).strftime('%Y-%m-%d %H:%M'),
-    "cycles": 1
+    "start": (datetime.now() + timedelta(hours=2)).strftime('%Y-%m-%dT%H:%M:%S'),
+    "end": (datetime.now() + timedelta(hours=2.5)).strftime('%Y-%m-%dT%H:%M:%S'),
+    "cycles": 1,
+    "userId": str(users.find_one({'email': 'charlie@example.com'})['_id']),
 }, cookies=login_response.cookies)  # Use cookies for session management
 print("Book Machine Response:", book_machine_response.json())
 
@@ -86,8 +88,10 @@ print("Book Machine Response:", book_machine_response.json())
 machine_id = machines.find_one({'type': 'washer'})['_id']
 book_machine_response = requests.post(f"{base_url}/bookMachine", json={
     "machineId": str(machine_id),
-    "dateTime": (datetime.now() + timedelta(hours=2)).strftime('%Y-%m-%d %H:%M'),
-    "cycles": 1
+    "start": (datetime.now() + timedelta(hours=2)).strftime('%Y-%m-%dT%H:%M:%S'),
+    "end": (datetime.now() + timedelta(hours=2.5)).strftime('%Y-%m-%dT%H:%M:%S'),
+    "cycles": 1,
+    "userId": str(users.find_one({'email': 'charlie@example.com'})['_id']),
 }, cookies=login_response.cookies)  # Use cookies for session management
 print("Book Machine Response:", book_machine_response.json())
 
