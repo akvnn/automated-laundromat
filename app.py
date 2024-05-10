@@ -5,6 +5,7 @@ from bson.objectid import ObjectId
 from datetime import datetime, timedelta
 import bcrypt
 import os
+import stripePayment
 from dotenv import load_dotenv
 load_dotenv('.env')
 app = Flask(__name__)
@@ -64,6 +65,28 @@ def bookings_html(machine_type, machine_id, machine_name):
 @app.route('/payment', methods=['GET'])
 def payment_html():
     return render_template('payment.html')
+
+
+@app.route('/payment', methods=['POST'])
+def start_payment():
+    # call stripe function if selected payment method is card
+    url = stripePayment.create_checkout_session()
+    return jsonify({'redirectUrl': str(url)}), 200
+
+
+@app.route('/success')
+def paymentSuccess():
+    return render_template('success.html')
+
+
+@app.route('/cancel')
+def paymentCancel():
+    return render_template('cancel.html')
+
+
+@app.route('/coin')
+def coin():
+    return render_template('coin.html')
 
 
 @app.route('/signup', methods=['POST'])

@@ -120,6 +120,20 @@ if (payment_method_btn !== null) {
 
         // { code: 4001, message: 'User rejected the request.' }
       }
+    } else if (selected_payment_method === 'card') {
+      response = await fetch('/payment', {
+        method: 'POST',
+        body: JSON.stringify({})
+      })
+
+      if (!response.ok) {
+        throw new Error('failed to create stripe session')
+      }
+
+      const { redirectUrl } = await response.json()
+      location.assign(redirectUrl)
+    } else if (selected_payment_method === 'coin') {
+      location.assign('/coin');
     }
   })
 }
