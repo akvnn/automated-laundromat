@@ -121,7 +121,7 @@ def machine_bookings():
             'userId': str(booking['userId']),
             'start': booking['start'].strftime('%Y-%m-%d %H:%M'),
             'end': booking['end'].strftime('%Y-%m-%d %H:%M'),
-            'title': booking['title']
+            # 'title': booking['title']
         }
         result.append(booking_data)
     return jsonify(result)
@@ -165,7 +165,7 @@ def book_machine():
             'userId': ObjectId(user_id),
             'start': start_time,
             'end': end_time,
-            'title': data['title']
+            # 'title': data['title']
         }).inserted_id
         return jsonify({'booking_id': str(booking_id)}), 200
     return jsonify({'message': 'Machine not available'}), 409
