@@ -5,6 +5,8 @@ from bson.objectid import ObjectId
 from datetime import datetime, timedelta
 import bcrypt
 import os
+from dotenv import load_dotenv
+load_dotenv('.env')
 app = Flask(__name__)
 app.secret_key = 'some_secret_key'
 # MongoDB setup

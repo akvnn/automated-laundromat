@@ -4,6 +4,8 @@ from pymongo.server_api import ServerApi
 from datetime import datetime, timedelta
 import bcrypt
 import os
+from dotenv import load_dotenv
+load_dotenv('.env')
 # MongoDB setup
 uri = os.environ.get('MONGODB_URI')
 # Create a new client and connect to the server
