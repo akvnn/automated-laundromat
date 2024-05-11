@@ -48,7 +48,7 @@ const loadBookingHistory = async () => {
         
         // Add unlock button if the time >= start time and <= (end time - start time) / 2
         if (currentTime >= new Date(booking.start).getTime()
-            && currentTime <= new Date(booking.end).getTime() - (new Date(booking.end).getTime() - new Date(booking.start).getTime()) / 2
+            && currentTime <= new Date(booking.end).getTime()
           ){
           const unlockButton = document.createElement('button')
           unlockButton.className = 'btn btn-primary'
@@ -57,6 +57,18 @@ const loadBookingHistory = async () => {
             lockUnlockMachine(machineMap[booking.machineId], booking, bookingCard)
           })
           bookingCard.appendChild(unlockButton)
+          const video = document.createElement('video')
+          video.setAttribute('width', '320')
+          video.setAttribute('height', '240')
+          video.setAttribute('muted', '')
+          video.setAttribute('autoplay', '')
+          video.setAttribute('loop', '')
+          video.setAttribute('playsinline', '')
+          video.src = `/static/videos/machine.mov`
+          bookingCard.appendChild(video)
+          setTimeout(() => {
+            video.play()
+          }, 2500)
         }
         bookingCard.setAttribute('booking-id', booking.booking_id)
 
@@ -79,20 +91,6 @@ const lockUnlockMachine = async (machine, booking, bookingCard) => {
   await loadBookingHistory()
   booking.previouslyLocked = true
   alert(`Machine ${machine.name} is now ${machine.status === 'locked' ? 'unlocked' : 'locked'}`)
-  // add video stream
-  const video = document.createElement('video')
-  video.setAttribute('width', '320')
-  video.setAttribute('height', '240')
-  video.setAttribute('muted', '')
-  video.setAttribute('autoplay', '')
-  video.setAttribute('loop', '')
-  video.setAttribute('playsinline', '')
-  video.src = `/static/videos/machine.mov`
-  bookingCard = document.querySelector(`[booking-id='${booking.booking_id}']`)
-  bookingCard.appendChild(video)
-  setTimeout(() => {
-    video.play()
-  }, 1000)
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
