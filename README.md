@@ -25,6 +25,10 @@ The project is an implementation of an Automated Laundromat System (ALS) as part
 - Stripe -> Payment Gateway
 - Phantom -> Payment Gateway
 
+### Sample screenshots
+![Home Page](screenshots/screen1.jpeg)
+![Booking Page](screenshots/screen2.jpeg)
+
 # Running instructions
 
 ### Setting up the MongoDB database on MongoDB Atlas (Free Tier)
