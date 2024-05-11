@@ -81,6 +81,7 @@ book_machine_response = requests.post(f"{base_url}/bookMachine", json={
     "end": (datetime.now() + timedelta(hours=2.5)).strftime('%Y-%m-%dT%H:%M:%S'),
     "cycles": 1,
     "userId": str(users.find_one({'email': 'charlie@example.com'})['_id']),
+    "title": "test booking"
 }, cookies=login_response.cookies)  # Use cookies for session management
 print("Book Machine Response:", book_machine_response.json())
 
@@ -92,6 +93,7 @@ book_machine_response = requests.post(f"{base_url}/bookMachine", json={
     "end": (datetime.now() + timedelta(hours=2.5)).strftime('%Y-%m-%dT%H:%M:%S'),
     "cycles": 1,
     "userId": str(users.find_one({'email': 'charlie@example.com'})['_id']),
+    "title": "test booking"
 }, cookies=login_response.cookies)  # Use cookies for session management
 print("Book Machine Response:", book_machine_response.json())
 

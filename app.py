@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, session, render_template
+from flask import Flask, request, jsonify, session, render_template, flash, redirect
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from bson.objectid import ObjectId
@@ -6,10 +6,14 @@ from datetime import datetime, timedelta
 import bcrypt
 import os
 import stripePayment
+from flask_session import Session
+
 from dotenv import load_dotenv
 load_dotenv('.env')
+
 app = Flask(__name__)
 app.secret_key = 'some_secret_key'
+
 # MongoDB setup
 uri = os.environ.get('MONGODB_URI')
 # Create a new client and connect to the server
@@ -24,7 +28,13 @@ db = client['laundromat']
 users = db['users']
 machines = db['machines']
 bookings = db['bookings']
-# End of MongoDB setup
+
+# Flask session setup
+app.config['SESSION_TYPE'] = 'mongodb'
+app.config['SESSION_MONGODB'] = client
+app.config['SESSION_MONGODB_DB'] = 'laundromat'
+app.config['SESSION_MONGODB_COLLECTION'] = 'sessions'
+Session(app)
 
 # Helper Functions
 
@@ -49,12 +59,6 @@ def home():
 @app.route('/machines', methods=['GET'])
 def machines_html():
     return render_template('machines.html')
-
-
-@app.route('/login', methods=['GET'])
-@app.route('/signup', methods=['GET'])
-def login_html():
-    return render_template('login.html')
 
 
 @app.route('/bookings/<machine_type>/<machine_id>/<machine_name>', methods=['GET'])
@@ -89,8 +93,10 @@ def coin():
     return render_template('coin.html')
 
 
-@app.route('/signup', methods=['POST'])
+@app.route('/signup', methods=['GET', 'POST'])
 def signup():
+    if request.method == 'GET':
+        return render_template('login.html')
     data = request.json
 
     # Check if the email is already in use
@@ -105,11 +111,14 @@ def signup():
         'email': data['email'],
         'password': hashed_password
     }).inserted_id
+    session['user_id'] = str(user_id)
     return jsonify({'user_id': str(user_id)}), 200
 
 
-@app.route('/login', methods=['POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
+    if request.method == 'GET':
+        return render_template('login.html')
     data = request.json
     print(data)
     try:
@@ -125,7 +134,8 @@ def login():
 @app.route('/logout', methods=['GET'])
 def logout():
     session.pop('user_id', None)
-    return jsonify({'message': 'Logged out'}), 200
+    flash('Logged out successfuly')
+    return redirect('/')
 
 
 @app.route('/machineBookings', methods=['POST'])
@@ -144,7 +154,7 @@ def machine_bookings():
             'userId': str(booking['userId']),
             'start': booking['start'].strftime('%Y-%m-%d %H:%M'),
             'end': booking['end'].strftime('%Y-%m-%d %H:%M'),
-            # 'title': booking['title']
+            'title': booking['title']
         }
         result.append(booking_data)
     return jsonify(result)
@@ -167,12 +177,22 @@ def get_machines():
             result['dryers'].append(machine_data)
     return jsonify(result)
 
+@app.route('/userData', methods=['GET'])
+def get_user_data():
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'message': 'Unauthorized'}), 401
+    user = users.find_one({'_id': ObjectId(user_id)})
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
+    return jsonify({'name': user['name'], 'email': user['email']})
 
 @app.route('/bookMachine', methods=['POST'])
 def book_machine():
     data = request.json
-    user_id = data['userId']  # later change to use jwt
+    user_id = session.get('user_id')
     if not user_id:
+        flash('Please login to book a machine')
         return jsonify({'message': 'Unauthorized'}), 401
 
     start_time = datetime.strptime(data['start'][:19], '%Y-%m-%dT%H:%M:%S')
@@ -188,7 +208,7 @@ def book_machine():
             'userId': ObjectId(user_id),
             'start': start_time,
             'end': end_time,
-            # 'title': data['title']
+            'title': data['title']
         }).inserted_id
         return jsonify({'booking_id': str(booking_id)}), 200
     return jsonify({'message': 'Machine not available'}), 409

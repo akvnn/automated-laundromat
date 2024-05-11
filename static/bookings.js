@@ -1,3 +1,10 @@
+// TODO: only provide start time and cycle count not end time
+// TODO: prohibit bookings before current time (app.py) and longer than 2 cycles
+let user
+const getData = async () => {
+  await fetch('/userData').then(r => r.json()).then(res => user = res)
+}
+
 const processBooking = async (
   machine_id,
   machine_type,
@@ -173,8 +180,9 @@ const displaySchedule = async () => {
         calendar.unselect()
         return
       }
-      let title = prompt('Please enter a title for your event')
+      // let title = prompt('Please enter a title for your event')
       // generate ObjectID
+      let title = user.name + ' | ' + machine_type
       const userId = '60b9b3b3b3b3b3b3b3b3b3b3'
       if (title) {
         calendar.addEvent({
@@ -221,8 +229,10 @@ const displaySchedule = async () => {
     calendar.addEvent(event)
   })
 }
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   if (window.location.pathname.split('/')[1] === 'bookings') {
+    await getData()
+    console.log(bookings);
     displaySchedule()
   }
 })
