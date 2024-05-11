@@ -36,8 +36,8 @@ users.insert_many([
 
 # Insert sample machines
 machines.insert_many([
-    {"type": "washer", "status": "available", "bookedSlots": [], "name": "1"},
-    {"type": "dryer", "status": "available", "bookedSlots": [], "name": "2"}
+    {"type": "washer", "status": "available", "bookedSlots": [], "name": "1", "status": "locked"},
+    {"type": "dryer", "status": "available", "bookedSlots": [], "name": "2", "status": "locked"}
 ])
 
 # Insert a pre-existing booking (optional)

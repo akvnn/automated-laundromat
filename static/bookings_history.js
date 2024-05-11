@@ -45,31 +45,28 @@ const loadBookingHistory = async () => {
             <p class="item-status">Payment Method: ${booking.paymentMethod}</p>
         `
         const currentTime = new Date().getTime()
-        // can change status if the booking is within 5 minutes of start
-        const fiveMinutes = 5 * 60 * 1000
-
-        const startTime = new Date(booking.start).getTime()
-        const timeDifference = currentTime - startTime
-
-
-        // Add unlock button if the time difference is less than 5 minutes
-        if (timeDifference <= fiveMinutes && timeDifference >= 0) {
+        
+        // Add unlock button if the time >= start time and <= (end time - start time) / 2
+        if (currentTime >= new Date(booking.start).getTime()
+            && currentTime <= new Date(booking.end).getTime() - (new Date(booking.end).getTime() - new Date(booking.start).getTime()) / 2
+          ){
           const unlockButton = document.createElement('button')
           unlockButton.className = 'btn btn-primary'
           unlockButton.innerText = machineMap[booking.machineId].status === 'locked' ? 'Unlock' : 'Lock'
           unlockButton.addEventListener('click', () => {
-            lockUnlockMachine(machineMap[booking.machineId], booking)
+            lockUnlockMachine(machineMap[booking.machineId], booking, bookingCard)
           })
           bookingCard.appendChild(unlockButton)
         }
+        bookingCard.setAttribute('booking-id', booking.booking_id)
 
       bookingHistory.appendChild(bookingCard)
     })
   }
 }
 
-const lockUnlockMachine = async (machine, booking) => {
-  fetch('/setMachineStatus', {
+const lockUnlockMachine = async (machine, booking, bookingCard) => {
+  await fetch('/setMachineStatus', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -79,8 +76,23 @@ const lockUnlockMachine = async (machine, booking) => {
       status: machine.status === 'locked' ? 'unlocked' : 'locked',
     }),
   })
-  loadBookingHistory()
+  await loadBookingHistory()
+  booking.previouslyLocked = true
   alert(`Machine ${machine.name} is now ${machine.status === 'locked' ? 'unlocked' : 'locked'}`)
+  // add video stream
+  const video = document.createElement('video')
+  video.setAttribute('width', '320')
+  video.setAttribute('height', '240')
+  video.setAttribute('muted', '')
+  video.setAttribute('autoplay', '')
+  video.setAttribute('loop', '')
+  video.setAttribute('playsinline', '')
+  video.src = `/static/videos/machine.mov`
+  bookingCard = document.querySelector(`[booking-id='${booking.booking_id}']`)
+  bookingCard.appendChild(video)
+  setTimeout(() => {
+    video.play()
+  }, 1000)
 }
 
 document.addEventListener('DOMContentLoaded', async () => {

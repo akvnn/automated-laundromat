@@ -1,3 +1,29 @@
+# Project description
+The project is an implementation of an Automated Laundromat System (ALS) as part of the software engineering course at the American University of Sharjah (COE 420).
+
+### Contributors
+- Ahmed Alabd Aljabar - @00092885
+- Ahmed Al Shadid - @00091777
+- Hala Maadi - @00092771
+- Omar Ibrahim - @00093225
+- Said Iqelan - @00086701
+- Supervisor: Dr. Hicham Hallal
+
+### Features
+- user dashboard
+- scheduling algorithm
+- reservation system
+- integration with different payment gateways (Stripe and Phantom)
+
+### Tech stack
+- Flask (Python) -> Backend
+    - Jinja2 -> Templating Engine
+- MongoDB -> Database
+- HTML, CSS, JS -> Frontend
+    - Bootstrap -> CSS Framework
+    - Full Calendar -> JS Calendar Library
+- Stripe -> Payment Gateway
+- Phantom -> Payment Gateway
 
 # Running instructions
 
