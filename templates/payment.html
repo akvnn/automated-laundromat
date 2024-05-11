@@ -1,40 +1,32 @@
-{% extends "base.html" %}
-{% block head %}
-    <title>Automated Laundromat | Payment</title>
+{% extends "base.html" %} {% block head %}
+<title>Automated Laundromat | Payment</title>
+{% endblock %} {% block content %}
+
+<section class="payment">
+  <h1 class="payment_h1">Booking Info</h1>
+  <div class="booking_info" id="booking_info"></div>
+  <form onsubmit="return" class="payment_method">
+    <h1 class="payment_h1">Choose Payment Method</h1>
+    <div class="payment_method_option">
+      <input type="radio" id="coin" name="payment_method" value="coin" />
+      <label for="coin">Coin</label>
+    </div>
+    <div class="payment_method_option">
+      <input type="radio" id="card" name="payment_method" value="card" />
+      <label for="card">Card</label>
+    </div>
+    <div class="payment_method_option">
+      <input type="radio" id="phantom" name="payment_method" value="phantom" />
+      <label for="phantom" id="phantom_label">Phantom</label>
+    </div>
+    <h2>.......................................</h2>
+
+    <button class="payment_method_btn" id="payment_method_btn">
+      Let`s go!
+    </button>
+  </form>
+</section>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/buffer/6.0.3/buffer.min.js"></script> -->
+<script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
+<script src="../../static/bookings.js"></script>
 {% endblock %}
-
-{% block content %}
-
-    <section class="payment">
-      <h1>Booking Info</h1>
-      <div class="booking_info" id="booking_info"></div>
-      <form onsubmit="return" class="payment_method">
-        <h1>Choose Payment Method</h1>
-        <div class="payment_method_option">
-          <input type="radio" id="coin" name="payment_method" value="coin" />
-          <label for="coin">Coin</label>
-        </div>
-        <div class="payment_method_option">
-          <input type="radio" id="card" name="payment_method" value="card" />
-          <label for="card">Card</label>
-        </div>
-        <div class="payment_method_option">
-          <input
-            type="radio"
-            id="phantom"
-            name="payment_method"
-            value="phantom"
-          />
-          <label for="phantom" id="phantom_label">Phantom</label>
-        </div>
-        <h2>.......................................</h2>
-
-        <button class="payment_method_btn" id="payment_method_btn">
-          Let`s go!
-        </button>
-      </form>
-    </section>
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/buffer/6.0.3/buffer.min.js"></script> -->
-    <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
-    <script src="../../static/bookings.js"></script>
-    {% endblock %}
