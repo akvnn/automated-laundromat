@@ -227,6 +227,8 @@ def get_bookings():
             'paymentMethod': booking['paymentMethod']
         }
         result.append(booking_data)
+    # sort latest to oldest
+    result.sort(key=lambda x: x['start'], reverse=True)
     return jsonify(result)
 
 
@@ -299,6 +301,6 @@ def book_machine():
 
 
 if __name__ == '__main__':
-    # app.run(debug=True, host='0.0.0.0', port=8080)
-    from waitress import serve
-    serve(app, host="0.0.0.0", port=8080, threads=100)
+    app.run(debug=True, host='0.0.0.0', port=8080)
+    # from waitress import serve
+    # serve(app, host="0.0.0.0", port=8080, threads=100)
