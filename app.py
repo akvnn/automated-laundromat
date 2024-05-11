@@ -1,3 +1,4 @@
+from dotenv import load_dotenv
 from flask import Flask, request, jsonify, session, render_template, flash, redirect
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
@@ -11,7 +12,6 @@ from flask_session import Session
 # constants
 MAX_CYCLES = 2
 
-from dotenv import load_dotenv
 load_dotenv('.env')
 
 app = Flask(__name__)
@@ -40,6 +40,7 @@ app.config['SESSION_MONGODB_COLLECTION'] = 'sessions'
 Session(app)
 
 # Helper Functions
+
 
 def check_availability(machine_id, start_time, end_time):
     """ Check if the machine is available between the given times """
@@ -162,6 +163,7 @@ def machine_bookings():
         result.append(booking_data)
     return jsonify(result)
 
+
 @app.route('/machineInfo', methods=['POST'])
 def machine_info():
     data = request.json
@@ -175,6 +177,7 @@ def machine_info():
     }
     return jsonify(machine_data)
 
+
 @app.route('/setMachineStatus', methods=['POST'])
 def set_machine_status():
     data = request.json
@@ -183,6 +186,7 @@ def set_machine_status():
     machines.update_one({'_id': ObjectId(machine_id)}, {
                         '$set': {'status': status}})
     return jsonify({'message': 'Status updated'}), 200
+
 
 @app.route('/getMachines', methods=['GET'])
 def get_machines():
@@ -270,11 +274,11 @@ def book_machine():
 
     start_time = datetime.strptime(data['start'][:19], '%Y-%m-%dT%H:%M:%S')
     end_time = datetime.strptime(data['end'][:19], '%Y-%m-%dT%H:%M:%S')
-    
+
     if start_time < datetime.now():
         flash('Cannot book in the past')
         return jsonify({'message': 'Cannot book in the past'}), 400
-    
+
     if end_time > start_time + timedelta(minutes=30 * MAX_CYCLES):
         flash('Cannot book more than 2 cycles')
         return jsonify({'message': 'Cannot book more than 2 cycles'}), 400
@@ -295,6 +299,6 @@ def book_machine():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=8080)
-    # from waitress import serve
-    # serve(app, host="0.0.0.0", port=8080, threads=100)
+    # app.run(debug=True, host='0.0.0.0', port=8080)
+    from waitress import serve
+    serve(app, host="0.0.0.0", port=8080, threads=100)

@@ -44,38 +44,38 @@
         <a href="{{ url_for('login') }}"><li class="link">Login</li></a>
         <a href="{{ url_for('signup') }}"><li class="link">Signup</li></a>
         {% else %}
-        <a href="{{ url_for('machines_html') }}"><li class="link">Book Machine</li></a>
+        <a href="{{ url_for('machines_html') }}"
+          ><li class="link">Book Machine</li></a
+        >
         <a href="{{ url_for('logout') }}"><li class="link">Logout</li></a>
-        <a href="{{ url_for('bookings_history_html') }}"><li class="link">Bookings</li></a>
+        <a href="{{ url_for('bookings_history_html') }}"
+          ><li class="link">Bookings</li></a
+        >
         {% endif %}
       </ul>
     </nav>
 
-    {% with messages = get_flashed_messages() %} 
+    {% with messages = get_flashed_messages() %}
     <div class="flashes">
-      {% if messages %}
-        {% for message in messages %}
-        <div
-          class="alert alert-primary alert-dismissible fade show"
-          role="alert"
-          style="background-color: #485975; color: #ffffff"
+      {% if messages %} {% for message in messages %}
+      <div
+        class="alert alert-primary alert-dismissible fade show"
+        role="alert"
+        style="background-color: #485975; color: #ffffff"
+      >
+        {{ message }}
+        <button
+          type="button"
+          class="close"
+          data-dismiss="alert"
+          aria-label="Close"
         >
-          {{ message }}
-          <button
-            type="button"
-            class="close"
-            data-dismiss="alert"
-            aria-label="Close"
-          >
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        {% endfor %}
-      {% endif %}
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      {% endfor %} {% endif %}
     </div>
-     {% endwith %} 
-    
-    {% block content %} {% endblock %}
+    {% endwith %} {% block content %} {% endblock %}
 
     <footer class="footer">
       <p class="footer-p">Made with <i class="fas fa-heart"></i> by Group 3</p>
@@ -87,30 +87,35 @@
 
     <script>
       function alert(message) {
-        const alertDiv = document.createElement('div');
-        alertDiv.classList.add('alert', 'alert-primary', 'alert-dismissible', 'fade', 'show');
-        alertDiv.style.backgroundColor = '#485975';
-        alertDiv.style.color = '#ffffff';
+        const alertDiv = document.createElement('div')
+        alertDiv.classList.add(
+          'alert',
+          'alert-primary',
+          'alert-dismissible',
+          'fade',
+          'show'
+        )
+        alertDiv.style.backgroundColor = '#485975'
+        alertDiv.style.color = '#ffffff'
         alertDiv.innerHTML = `
           ${message}
           <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
-        `;
-        document.querySelector('.flashes').appendChild(alertDiv);
+        `
+        document.querySelector('.flashes').appendChild(alertDiv)
       }
       // clean up alerts after 4 seconds
-      window.setInterval(function() {
-          const alerts = document.querySelectorAll('.alert');
-          alerts.forEach(alert => {
-        alert.style.transition = 'opacity 0.8s';
-        alert.style.opacity = '0';
-        setTimeout(() => {
-          alert.remove();
-        }, 800);
-          });
-      }, 4000);
+      window.setInterval(function () {
+        const alerts = document.querySelectorAll('.alert')
+        alerts.forEach((alert) => {
+          alert.style.transition = 'opacity 0.8s'
+          alert.style.opacity = '0'
+          setTimeout(() => {
+            alert.remove()
+          }, 800)
+        })
+      }, 4000)
     </script>
-
   </body>
 </html>

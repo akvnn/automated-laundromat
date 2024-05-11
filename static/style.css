@@ -65,7 +65,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-right: 5rem;
+  margin-right: 4rem;
 }
 .link {
   text-decoration: none;
@@ -116,7 +116,6 @@ body {
     margin-left: 0;
   }
   .link {
-    margin: 0;
     font-size: 0.8rem;
     letter-spacing: normal;
   }
@@ -134,7 +133,6 @@ body {
     align-items: center;
   }
   .link {
-    margin: 0;
     font-size: 0.7rem;
     letter-spacing: normal;
   }
@@ -298,6 +296,36 @@ body {
   background-color: #485975;
   color: #fff;
   border: none;
+}
+@media screen and (max-width: 768px) {
+  .items {
+    margin-top: 0;
+  }
+  .sub-items {
+    margin: 1rem 0.5rem;
+  }
+  .items-container {
+    flex-direction: column;
+  }
+  .items-title {
+    font-size: 1.5rem;
+  }
+  .items-instructions {
+    font-size: 1rem;
+  }
+  .item {
+    margin: 0.5rem;
+    padding: 0.5rem;
+  }
+  .item-desc {
+    font-size: 1rem;
+  }
+  .item-status {
+    font-size: 0.75rem;
+  }
+  .item-btn {
+    font-size: 0.75rem;
+  }
 }
 /* end of items */
 /* booking */
