@@ -1,28 +1,27 @@
-{% extends 'base.html' %}
-{% block head %}
-    <title>Automated Laundromat | Home</title>
-{% endblock %}
-{% block content %}
-    <section class="landing">
-      <div class="landing-content">
-        <h1 class="landing-title">Automated Laundromat</h1>
-        <p class="landing-desc">A Unique Laundry Experience</p>
-        <div class="landing-btns">
-          <button
-            class="btn landing-btn"
-            onclick="window.location.href = '/machines'"
-          >
-            View & Book Available Machines
-          </button>
-          <button class="btn landing-btn">Your Bookings</button>
-        </div>
-      </div>
-      <div>
-        <img
-          src="../static/images/edges.jpeg"
-          alt="Laundry"
-          class="landing-img"
-        />
-      </div>
-    </section>
+{% extends 'base.html' %} {% block head %}
+<title>Automated Laundromat | Home</title>
+{% endblock %} {% block content %}
+<section class="landing">
+  <div class="landing-content">
+    <h1 class="landing-title">Automated Laundromat</h1>
+    <p class="landing-desc">A Unique Laundry Experience</p>
+    <div class="landing-btns">
+      <button
+        class="btn landing-btn"
+        onclick="window.location.href = '/machines'"
+      >
+        View & Book Available Machines
+      </button>
+      <button
+        class="btn landing-btn"
+        onclick="window.location.href = `/bookings_history`"
+      >
+        Your Bookings
+      </button>
+    </div>
+  </div>
+  <div>
+    <img src="../static/images/edges.jpeg" alt="Laundry" class="landing-img" />
+  </div>
+</section>
 {% endblock %}

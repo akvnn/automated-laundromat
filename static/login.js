@@ -19,7 +19,11 @@ const handleLogin = async () => {
     },
     body: JSON.stringify({ email, password }),
   })
+  const data = await response.json()
   if (response.status === 200) {
+    localStorage.setItem('user_id', data.user_id)
+    localStorage.setItem('user_email', data.user_email)
+    localStorage.setItem('user_name', data.user_name)
     window.location.href = '/'
   } else {
     alert('Invalid email or password')

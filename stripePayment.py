@@ -16,9 +16,10 @@ def create_checkout_session():
                 },
             ],
             mode='payment',
-            success_url=domain + '/success',
+            success_url=domain + '/bookingConfirmation/',
             cancel_url=domain + '/cancel',
         )
+
     except Exception as e:
         print(e)
         raise e

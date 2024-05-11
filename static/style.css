@@ -79,8 +79,7 @@ body {
 .link a {
   color: inherit;
 }
-/* hover for all except last */
-.link:not(:last-child):hover {
+.link:hover {
   color: #fff;
 }
 .btn {
@@ -321,6 +320,16 @@ body {
 } */
 .fc-timegrid-slot-label-cushion {
   font-weight: 500;
+  cursor: default;
+}
+.fc-col-header-cell-cushion {
+  font-weight: 500;
+  color: #485975;
+  cursor: default;
+}
+.fc-col-header-cell-cushion:hover {
+  color: #485975;
+  text-decoration: none;
 }
 /* end of booking */
 /* login */
@@ -605,6 +614,39 @@ body {
   margin: 0.25rem 0;
 }
 /* end of payment */
+/* start of booking confirmation */
+.confirmation {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 3rem;
+  color: #fff;
+}
+.confirmation-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 1rem;
+  color: #485975;
+}
+.confimration_title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+  margin-bottom: 3rem;
+  margin-top: 2rem;
+  border-bottom: 1.5px dotted #485975;
+}
+.confirmation_p {
+  font-size: 1.5rem;
+  font-weight: 300;
+  margin: 0.25rem 0;
+  color: #fff;
+}
+/* end of booking confirmation */
+
 /* footer */
 .footer {
   display: flex;

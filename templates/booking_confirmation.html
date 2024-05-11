@@ -1,0 +1,11 @@
+{% extends 'base.html' %} {% block head %}
+<title>Automated Laundromat | Booking Confirmation</title>
+{% endblock %} {% block content %}
+
+<section class="confirmation">
+    <div class="confirmation-container" id="booking_confirmation">
+    </div>
+  </div>
+</section>
+<script src="{{ url_for('static', filename='booking_confirmation.js') }}"></script>
+{% endblock %}

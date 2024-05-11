@@ -61,9 +61,19 @@ def machines_html():
     return render_template('machines.html')
 
 
+@app.route('/bookings_history', methods=['GET'])
+def bookings_history_html():
+    return render_template('bookings_history.html')
+
+
 @app.route('/bookings/<machine_type>/<machine_id>/<machine_name>', methods=['GET'])
 def bookings_html(machine_type, machine_id, machine_name):
     return render_template('bookings.html')
+
+
+@app.route('/bookingConfirmation/<booking_id>', methods=['GET'])
+def booking_confirmation_html(booking_id):
+    return render_template('booking_confirmation.html')
 
 
 @app.route('/payment', methods=['GET'])
@@ -78,19 +88,9 @@ def start_payment():
     return jsonify({'redirectUrl': str(url)}), 200
 
 
-@app.route('/success')
-def paymentSuccess():
-    return render_template('success.html')
-
-
 @app.route('/cancel')
 def paymentCancel():
     return render_template('cancel.html')
-
-
-@app.route('/coin')
-def coin():
-    return render_template('coin.html')
 
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -125,7 +125,7 @@ def login():
         user = users.find_one({'email': data['email']})
         if user and bcrypt.hashpw(data['password'], user['password']):
             session['user_id'] = str(user['_id'])
-            return jsonify({'message': 'Login successful'}), 200
+            return jsonify({'message': 'Login successful', 'user_id': str(user['_id']), 'user_name': user['name'], 'user_email': user['email']}), 200
     except Exception as e:
         print(e)
     return jsonify({'message': 'Unauthorized'}), 401
@@ -177,7 +177,55 @@ def get_machines():
             result['dryers'].append(machine_data)
     return jsonify(result)
 
-@app.route('/userData', methods=['GET'])
+
+@app.route('/getBookings', methods=['GET'])
+def get_bookings():
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'message': 'Unauthorized'}), 401
+    all_bookings = bookings.find({'userId': ObjectId(user_id)})
+    result = []
+    for booking in all_bookings:
+        booking_data = {
+            'booking_id': str(booking['_id']),
+            'machineId': str(booking['machineId']),
+            'machineName': machines.find_one({'_id': booking['machineId']})['name'],
+            'cycles': booking['cycles'],
+            'machineType': machines.find_one({'_id': booking['machineId']})['type'],
+            'start': booking['start'].strftime('%Y-%m-%d %H:%M'),
+            'end': booking['end'].strftime('%Y-%m-%d %H:%M'),
+            'title': booking['title'],
+            'status': booking['status'],
+            'paymentMethod': booking['paymentMethod']
+        }
+        result.append(booking_data)
+    return jsonify(result)
+
+
+@app.route('/getBooking/<booking_id>', methods=['GET'])
+def get_booking(booking_id):
+    if not ObjectId.is_valid(booking_id):
+        return jsonify({'message': 'Invalid booking id'}), 400
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'message': 'Unauthorized'}), 401
+    booking = bookings.find_one(
+        {'_id': ObjectId(booking_id), 'userId': ObjectId(user_id)})
+    if not booking:
+        return jsonify({'message': 'Booking not found'}), 404
+    booking_data = {
+        'machineName': machines.find_one({'_id': booking['machineId']})['name'],
+        'cycles': booking['cycles'],
+        'machineType': machines.find_one({'_id': booking['machineId']})['type'],
+        'start': booking['start'].strftime('%Y-%m-%d %H:%M'),
+        'end': booking['end'].strftime('%Y-%m-%d %H:%M'),
+        'status': booking['status'],
+        'paymentMethod': booking['paymentMethod']
+    }
+    return jsonify(booking_data)
+
+
+@ app.route('/userData', methods=['GET'])
 def get_user_data():
     user_id = session.get('user_id')
     if not user_id:
@@ -187,7 +235,8 @@ def get_user_data():
         return jsonify({'message': 'User not found'}), 404
     return jsonify({'name': user['name'], 'email': user['email']})
 
-@app.route('/bookMachine', methods=['POST'])
+
+@ app.route('/bookMachine', methods=['POST'])
 def book_machine():
     data = request.json
     user_id = session.get('user_id')
@@ -198,9 +247,8 @@ def book_machine():
     start_time = datetime.strptime(data['start'][:19], '%Y-%m-%dT%H:%M:%S')
     end_time = datetime.strptime(data['end'][:19], '%Y-%m-%dT%H:%M:%S')
     # end_time = start_time + timedelta(minutes=30 * data['cycles']) # not needed
-
-   # if data['cycles'] > 2: # handled in frontend, can keep by calcuating the cycles from the time
-   #     return jsonify({'message': 'Cannot book more than 2 cycles'}), 400
+    if data['cycles'] > 2:  # handled in frontend, can keep by calcuating the cycles from the time
+        return jsonify({'message': 'Cannot book more than 2 cycles'}), 400
 
     if check_availability(data['machineId'], start_time, end_time):
         booking_id = bookings.insert_one({
@@ -208,13 +256,16 @@ def book_machine():
             'userId': ObjectId(user_id),
             'start': start_time,
             'end': end_time,
-            'title': data['title']
+            'title': data['title'],
+            'cycles': data['cycles'],
+            'status': data['status'],
+            'paymentMethod': data['paymentMethod']
         }).inserted_id
         return jsonify({'booking_id': str(booking_id)}), 200
     return jsonify({'message': 'Machine not available'}), 409
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=8080)
-    # from waitress import serve
-    # serve(app, host="0.0.0.0", port=8080, threads=100)
+    # app.run(debug=True, host='0.0.0.0', port=8080)
+    from waitress import serve
+    serve(app, host="0.0.0.0", port=8080, threads=100)

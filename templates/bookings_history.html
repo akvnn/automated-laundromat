@@ -1,0 +1,13 @@
+{% extends 'base.html' %} {% block head %}
+<title>Automated Laundromat | Bookings History</title>
+{% endblock %} {% block content %}
+
+<section class="items">
+  <div class="sub-items">
+    <h2 class="items-title">Bookings</h2>
+    <p class="items-instructions">Your booking history</p>
+    <div class="items-container" id="bookings_history"></div>
+  </div>
+</section>
+<script src="{{ url_for('static', filename='bookings_history.js') }}"></script>
+{% endblock %}

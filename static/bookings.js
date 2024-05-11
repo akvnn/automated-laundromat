@@ -1,9 +1,5 @@
-// TODO: only provide start time and cycle count not end time
 // TODO: prohibit bookings before current time (app.py) and longer than 2 cycles
-let user
-const getData = async () => {
-  await fetch('/userData').then(r => r.json()).then(res => user = res)
-}
+// DONE -> cycles done from both frontend and backend, time done only from frontend, which should be good enough
 
 const processBooking = async (
   machine_id,
@@ -37,7 +33,7 @@ const proceedToPayment = async (
   start,
   end,
   title,
-  userId
+  cycles
 ) => {
   booking_data = {
     machine_name,
@@ -46,7 +42,7 @@ const proceedToPayment = async (
     start,
     end,
     title,
-    userId,
+    cycles,
   }
   localStorage.setItem('booking_data', JSON.stringify(booking_data))
   window.location.href = `/payment`
@@ -65,10 +61,11 @@ if (payment_method_btn !== null) {
       start,
       end,
       title,
-      userId,
+      cycles,
     } = JSON.parse(localStorage.getItem('booking_data'))
+    // const userId = localStorage.getItem('user_id')
     booking_info.innerHTML = `
-    <p class="payment_p">${machine_type} ${machine_name}</p>
+    <p class="payment_p">${machine_type} ${machine_name} - ${cycles} cycle(s)</p>
     <p class="payment_p">${
       start.split('T')[0] + ' ' + start.split('T')[1].split('+')[0]
     } - ${end.split('T')[0] + ' ' + end.split('T')[1].split('+')[0]}</p>`
@@ -83,6 +80,19 @@ if (payment_method_btn !== null) {
     const selected_payment_method = document.querySelector(
       'input[name="payment_method"]:checked'
     ).value
+    const userId = localStorage.getItem('user_id')
+    if (!userId) {
+      window.location.href = '/login'
+    }
+    const {
+      machine_name,
+      machine_id,
+      machine_type,
+      start,
+      end,
+      title,
+      cycles,
+    } = JSON.parse(localStorage.getItem('booking_data'))
     if (selected_payment_method === 'phantom') {
       if (!window.phantom?.solana?.isPhantom) {
         alert('Please install Phantom Wallet')
@@ -92,36 +102,54 @@ if (payment_method_btn !== null) {
       try {
         const resp = await provider.connect()
         console.log(resp.publicKey.toString())
+        const response = await fetch('/bookMachine', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            machineId: machine_id,
+            start: start,
+            end: end,
+            title: title,
+            userId: userId,
+            status: 'paid',
+            paymentMethod: 'phantom',
+            cycles: cycles,
+          }),
+        })
+        const data = await response.json()
+        window.location.href = '/bookingConfirmation/' + data.booking_id
         // 26qv4GCcx98RihuK3c4T6ozB3J7L6VwCuFVc7Ta2A3Uo
         // make a transaction using phantom
-        const connection = new solanaWeb3.Connection(
-          solanaWeb3.clusterApiUrl('devnet')
-        )
-        //does not work
-        const transaction = new solanaWeb3.Transaction().add(
-          solanaWeb3.SystemProgram.transfer({
-            fromPubkey: resp.publicKey,
-            toPubkey: new solanaWeb3.PublicKey(
-              'JAiGi1CXYZRXZsbTdCEpTaXuAX7Apc95HLQYeaKdwB7Z'
-            ),
-            lamports: 10000,
-          })
-        )
-        // Set recent blockhash
-        transaction.recentBlockhash = (
-          await connection.getRecentBlockhash()
-        ).blockhash
+        // const connection = new solanaWeb3.Connection(
+        //   solanaWeb3.clusterApiUrl('devnet')
+        // )
+        // //does not work
+        // const transaction = new solanaWeb3.Transaction().add(
+        //   solanaWeb3.SystemProgram.transfer({
+        //     fromPubkey: resp.publicKey,
+        //     toPubkey: new solanaWeb3.PublicKey(
+        //       'JAiGi1CXYZRXZsbTdCEpTaXuAX7Apc95HLQYeaKdwB7Z'
+        //     ),
+        //     lamports: 10000,
+        //   })
+        // )
+        // // Set recent blockhash
+        // transaction.recentBlockhash = (
+        //   await connection.getRecentBlockhash()
+        // ).blockhash
 
-        // Set fee payer
-        transaction.feePayer = provider.publicKey
-        // Request user to sign and send the transaction via Phantom
-        let signedTransaction = await provider.signTransaction(transaction)
-        let signature = await connection.sendRawTransaction(
-          signedTransaction.serialize()
-        )
+        // // Set fee payer
+        // transaction.feePayer = provider.publicKey
+        // // Request user to sign and send the transaction via Phantom
+        // let signedTransaction = await provider.signTransaction(transaction)
+        // let signature = await connection.sendRawTransaction(
+        //   signedTransaction.serialize()
+        // )
 
-        // Optionally, await confirmation
-        await connection.confirmTransaction(signature)
+        // // Optionally, await confirmation
+        // await connection.confirmTransaction(signature)
       } catch (err) {
         console.log(err)
 
@@ -130,7 +158,7 @@ if (payment_method_btn !== null) {
     } else if (selected_payment_method === 'card') {
       response = await fetch('/payment', {
         method: 'POST',
-        body: JSON.stringify({})
+        body: JSON.stringify({}),
       })
 
       if (!response.ok) {
@@ -140,7 +168,25 @@ if (payment_method_btn !== null) {
       const { redirectUrl } = await response.json()
       location.assign(redirectUrl)
     } else if (selected_payment_method === 'coin') {
-      location.assign('/coin');
+      const response = await fetch('/bookMachine', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          machineId: machine_id,
+          start: start,
+          end: end,
+          title: title,
+          userId: userId,
+          status: 'paid',
+          paymentMethod: 'coin',
+          cycles: cycles,
+        }),
+      })
+      const data = await response.json()
+      window.location.href = '/bookingConfirmation/' + data.booking_id
+      // location.assign('/coin')
     }
   })
 }
@@ -174,16 +220,28 @@ const displaySchedule = async () => {
       let duration = moment.duration(
         moment(info.endStr).diff(moment(info.startStr))
       )
-      if (duration.asHours() > 1) {
-        console.log(duration.asHours())
-        alert('Events cannot be longer than 1 hour')
+      let cycles = duration.asMinutes() / 30
+      if (cycles > 2) {
+        alert('Events cannot be longer than 2 cycles')
         calendar.unselect()
         return
       }
+      // dont allow boooking if before current time
+      if (moment().isAfter(moment(info.startStr))) {
+        alert('Cannot book before current time')
+        calendar.unselect()
+        return
+      }
+      // if (duration.asHours() > 1) {
+      //   console.log(duration.asHours())
+      //   alert('Events cannot be longer than 1 hour')
+      //   calendar.unselect()
+      //   return
+      // }
       // let title = prompt('Please enter a title for your event')
       // generate ObjectID
-      let title = user.name + ' | ' + machine_type
-      const userId = '60b9b3b3b3b3b3b3b3b3b3b3'
+      let title = machine_type + ' ' + 'booking'
+      const userId = localStorage.getItem('user_id')
       if (title) {
         calendar.addEvent({
           title: title,
@@ -199,7 +257,7 @@ const displaySchedule = async () => {
           info.startStr,
           info.endStr,
           title,
-          userId
+          cycles
         )
       }
       calendar.unselect()
@@ -231,8 +289,7 @@ const displaySchedule = async () => {
 }
 document.addEventListener('DOMContentLoaded', async () => {
   if (window.location.pathname.split('/')[1] === 'bookings') {
-    await getData()
-    console.log(bookings);
+    // await getData()
     displaySchedule()
   }
 })
