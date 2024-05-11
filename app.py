@@ -8,6 +8,9 @@ import os
 import stripePayment
 from flask_session import Session
 
+# constants
+MAX_CYCLES = 2
+
 from dotenv import load_dotenv
 load_dotenv('.env')
 
@@ -37,7 +40,6 @@ app.config['SESSION_MONGODB_COLLECTION'] = 'sessions'
 Session(app)
 
 # Helper Functions
-
 
 def check_availability(machine_id, start_time, end_time):
     """ Check if the machine is available between the given times """
@@ -109,7 +111,8 @@ def signup():
     user_id = users.insert_one({
         'name': data['name'],
         'email': data['email'],
-        'password': hashed_password
+        'password': hashed_password,
+        'role': 'user' if not 'admin' in data['name'] else 'admin'
     }).inserted_id
     session['user_id'] = str(user_id)
     return jsonify({'user_id': str(user_id)}), 200
@@ -159,6 +162,27 @@ def machine_bookings():
         result.append(booking_data)
     return jsonify(result)
 
+@app.route('/machineInfo', methods=['POST'])
+def machine_info():
+    data = request.json
+    machine_id = data['machineId']
+    machine = machines.find_one({'_id': ObjectId(machine_id)})
+    machine_data = {
+        'id': str(machine['_id']),
+        'status': machine['status'],
+        'type': machine['type'],
+        'name': machine['name']
+    }
+    return jsonify(machine_data)
+
+@app.route('/setMachineStatus', methods=['POST'])
+def set_machine_status():
+    data = request.json
+    machine_id = data['machineId']
+    status = data['status']
+    machines.update_one({'_id': ObjectId(machine_id)}, {
+                        '$set': {'status': status}})
+    return jsonify({'message': 'Status updated'}), 200
 
 @app.route('/getMachines', methods=['GET'])
 def get_machines():
@@ -225,7 +249,7 @@ def get_booking(booking_id):
     return jsonify(booking_data)
 
 
-@ app.route('/userData', methods=['GET'])
+@app.route('/userData', methods=['GET'])
 def get_user_data():
     user_id = session.get('user_id')
     if not user_id:
@@ -236,7 +260,7 @@ def get_user_data():
     return jsonify({'name': user['name'], 'email': user['email']})
 
 
-@ app.route('/bookMachine', methods=['POST'])
+@app.route('/bookMachine', methods=['POST'])
 def book_machine():
     data = request.json
     user_id = session.get('user_id')
@@ -246,8 +270,13 @@ def book_machine():
 
     start_time = datetime.strptime(data['start'][:19], '%Y-%m-%dT%H:%M:%S')
     end_time = datetime.strptime(data['end'][:19], '%Y-%m-%dT%H:%M:%S')
-    # end_time = start_time + timedelta(minutes=30 * data['cycles']) # not needed
-    if data['cycles'] > 2:  # handled in frontend, can keep by calcuating the cycles from the time
+    
+    if start_time < datetime.now():
+        flash('Cannot book in the past')
+        return jsonify({'message': 'Cannot book in the past'}), 400
+    
+    if end_time > start_time + timedelta(minutes=30 * MAX_CYCLES):
+        flash('Cannot book more than 2 cycles')
         return jsonify({'message': 'Cannot book more than 2 cycles'}), 400
 
     if check_availability(data['machineId'], start_time, end_time):
@@ -266,6 +295,6 @@ def book_machine():
 
 
 if __name__ == '__main__':
-    # app.run(debug=True, host='0.0.0.0', port=8080)
-    from waitress import serve
-    serve(app, host="0.0.0.0", port=8080, threads=100)
+    app.run(debug=True, host='0.0.0.0', port=8080)
+    # from waitress import serve
+    # serve(app, host="0.0.0.0", port=8080, threads=100)

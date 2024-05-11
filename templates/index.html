@@ -5,6 +5,7 @@
   <div class="landing-content">
     <h1 class="landing-title">Automated Laundromat</h1>
     <p class="landing-desc">A Unique Laundry Experience</p>
+    {% if session.get('user_id') %}
     <div class="landing-btns">
       <button
         class="btn landing-btn"
@@ -19,6 +20,7 @@
         Your Bookings
       </button>
     </div>
+    {% endif %}
   </div>
   <div>
     <img src="../static/images/edges.jpeg" alt="Laundry" class="landing-img" />

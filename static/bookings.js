@@ -202,6 +202,7 @@ const displaySchedule = async () => {
     editable: true,
     selectable: true,
     allDaySlot: false,
+    nowIndicator: true,
     slotDuration: '00:30:00', // 1 slot = 1 cycle
     headerToolbar: {
       left: 'prev,next today',
