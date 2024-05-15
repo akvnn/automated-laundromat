@@ -41,6 +41,21 @@ const handleSignup = async () => {
     alert('Invalid email')
     return
   }
+  // check password > 8 characters and one number and one symbol
+  if (password.length < 8) {
+    alert('Password must be at least 8 characters')
+    return
+  }
+  const hasNumber = /\d/
+  if (!hasNumber.test(password)) {
+    alert('Password must contain at least one number')
+    return
+  }
+  const hasSymbol = /[^A-Za-z0-9]/
+  if (!hasSymbol.test(password)) {
+    alert('Password must contain at least one symbol')
+    return
+  }
   const response = await fetch('/signup', {
     method: 'POST',
     headers: {

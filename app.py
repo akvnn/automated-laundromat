@@ -106,6 +106,15 @@ def signup():
     existing_user = users.find_one({'email': data['email']})
     if existing_user:
         return jsonify({'message': 'Email already in use'}), 409
+    
+    # check if the password is at least 8 characters long and contains at least one number and one symbol
+    if len(data['password']) < 8:
+        return jsonify({'message': 'Password must be at least 8 characters long'}), 400
+    if not any(char.isdigit() for char in data['password']):
+        return jsonify({'message': 'Password must contain at least one number'}), 400
+    if not any(char in '!@#$%^&*()_+-=[]{}|;:,.<>?/~`' for char in data['password']):
+        return jsonify({'message': 'Password must contain at least one symbol'}), 400
+    
 
     hashed_password = bcrypt.hashpw(
         data['password'], bcrypt.gensalt())
